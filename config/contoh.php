@@ -1,8 +1,8 @@
 <?php
 return [
   "author" => [
-    "first" => "Nurkholis",
-    "last" => "Setiawan",
+    "first" => env("FIRST_NAME", "Nurkholis"),
+    "last" => env("LAST_NAME", "Setiawan"),
   ],
   "email" => "nurkholis010@gmail.com"
 ];
