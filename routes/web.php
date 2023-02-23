@@ -16,3 +16,23 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
   return view('welcome');
 });
+
+Route::get('/pzn', function () {
+  return "Programmer Zaman Now";
+});
+
+Route::redirect('/youtube', '/pzn');
+
+Route::fallback(function () {
+  return "404 Not Found By Kholis";
+});
+
+Route::view('/hello', 'hello', ['name' => 'kholis']);
+
+Route::get('/hello-again',  function () {
+  return view('hello', ['name' => 'kholis']);
+});
+
+Route::get('/hello-world',  function () {
+  return view('hello.world', ['name' => 'kholis']);
+});
