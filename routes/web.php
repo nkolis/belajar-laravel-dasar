@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\CookieController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FormController;
 use App\Http\Controllers\HelloController;
 use App\Http\Controllers\InputController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\ResponseController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +37,10 @@ Route::fallback(function () {
 });
 
 Route::view('/hello', 'hello', ['name' => 'kholis']);
+
+Route::get('/hello/{name}', function (string $name) {
+  return view('hello', ['name' => $name]);
+})->name('hello.name');
 
 Route::get('/hello-again',  function () {
   return view('hello', ['name' => 'kholis']);
@@ -97,26 +103,46 @@ Route::post('/input/file', [FileController::class, 'upload'])->withoutMiddleware
 
 Route::get('/response/hello', [ResponseController::class, 'response']);
 Route::get('/response/header', [ResponseController::class, 'header']);
-Route::get('/response/type/view', [ResponseController::class, 'responseView']);
-Route::get('/response/type/json', [ResponseController::class, 'responseJson']);
-Route::get('/response/type/file', [ResponseController::class, 'responseFile']);
-Route::get('/response/type/download', [ResponseController::class, 'responseDownload']);
+Route::prefix('/response/type')->group(function () {
+  Route::get('/view', [ResponseController::class, 'responseView']);
+  Route::get('/json', [ResponseController::class, 'responseJson']);
+  Route::get('/file', [ResponseController::class, 'responseFile']);
+  Route::get('/download', [ResponseController::class, 'responseDownload']);
+});
 
-Route::get('/cookie/set', [CookieController::class, 'createCookie']);
-Route::get('/cookie/get', [CookieController::class, 'getCookie']);
-Route::get('/cookie/clear', [CookieController::class, 'clearCookie']);
+Route::controller(CookieController::class)->prefix('/cookie')->group(function () {
+  Route::get('/set', 'createCookie');
+  Route::get('/get', 'getCookie');
+  Route::get('/clear', 'clearCookie');
+});
 
 Route::get('/redirect/to', [RedirectController::class, 'redirectTo']);
 Route::get('/redirect/from', [RedirectController::class, 'redirectFrom']);
 Route::get('/redirect/hello/{name}', [RedirectController::class, 'redirectHello'])->name('redirect.hello');
+Route::get('/redirect/named', function () {
+  return url()->route('redirect.hello', ['name' => 'kholis']);
+});
 Route::get('/redirect/name', [RedirectController::class, 'redirectName']);
 Route::get('/redirect/action', [RedirectController::class, 'redirectAction']);
 Route::get('/redirect/google', [RedirectController::class, 'redirectAway']);
 
-Route::get('/middleware/api', function () {
-  return "OK";
-})->middleware('contoh:PZN,401');
+Route::middleware(['contoh:PZN,401'])->prefix('/middleware')->group(function () {
+  Route::get('/api', function () {
+    return "OK";
+  });
 
-Route::get('/middleware/group', function () {
-  return "GROUP";
-})->middleware('pzn');
+  Route::get('/group', function () {
+    return "GROUP";
+  });
+});
+
+Route::get('/url/action', function () {
+  return url()->action([FormController::class, 'form'], []);
+});
+
+Route::get('/form', [FormController::class, 'form']);
+Route::post('/form', [FormController::class, 'submitForm']);
+
+Route::get('/url/current', function () {
+  return URL::full();
+});
