@@ -7,6 +7,7 @@ use App\Http\Controllers\HelloController;
 use App\Http\Controllers\InputController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\ResponseController;
+use App\Http\Controllers\SessionController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -145,4 +146,10 @@ Route::post('/form', [FormController::class, 'submitForm']);
 
 Route::get('/url/current', function () {
   return URL::full();
+});
+
+Route::controller(SessionController::class)->prefix('/session')->group(function () {
+  Route::get('/create', 'createSession');
+  Route::get('/get', 'getSession');
+  Route::get('/destroy', 'destroySession');
 });
