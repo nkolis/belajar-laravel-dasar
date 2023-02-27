@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\ValidateException;
 use App\Http\Controllers\CookieController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FormController;
@@ -152,4 +153,27 @@ Route::controller(SessionController::class)->prefix('/session')->group(function 
   Route::get('/create', 'createSession');
   Route::get('/get', 'getSession');
   Route::get('/destroy', 'destroySession');
+});
+
+Route::get('/error/sample', function () {
+  throw new Exception('Error sample');
+});
+
+Route::get('/error/manual', function () {
+  report(new Exception('Sample Error'));
+  return "OK";
+});
+
+Route::get('/error/validation', function () {
+  throw new ValidateException('Error Validation');
+});
+
+Route::get('/abort/500', function () {
+  abort(500);
+});
+Route::get('/abort/400', function () {
+  abort(400, 'Upps validation error');
+});
+Route::get('/abort/401', function () {
+  abort(401);
 });
